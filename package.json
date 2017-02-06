@@ -1,9 +1,10 @@
 {
-    "name": "triggertaskonsave",
-    "displayName": "TriggerTaskOnSave",
+    "name": "trigger-task-on-save",
+    "displayName": "Trigger Task on Save",
     "description": "Run a selected task when saving files",
     "version": "0.0.1",
-    "publisher": "zaonce",
+    "publisher": "Gruntfuggly",
+    "repository": "https: //github.com/Gruntfuggly/triggertaskonsave",
     "engines": {
         "vscode": "^1.5.0"
     },
@@ -11,14 +12,30 @@
         "Other"
     ],
     "activationEvents": [
-        "onCommand:extension.sayHello"
+        "*"
     ],
-    "main": "./extension",
+    "main": "./out/src/extension",
     "contributes": {
-        "commands": [{
-            "command": "extension.sayHello",
-            "title": "Hello World"
-        }]
+        "configuration": {
+            "type": "object",
+            "title": "Trigger Task on Save confiiguration",
+            "properties": {
+                "triggerTaskOnSave.on": {
+                    "type": "boolean",
+                    "description": "Automatically trigger tasks on save",
+                    "default": true
+                },
+                "triggerTaskOnSave.extensions": {
+                    "type": "object",
+                    "description": "Tasks to associate with extensions, e.g. \"make\": [\"h\",\"cpp\"]",
+                    "default": {
+                        "build": [
+                            "*"
+                        ]
+                    }
+                }
+            }
+        }
     },
     "scripts": {
         "postinstall": "node ./node_modules/vscode/bin/install",
