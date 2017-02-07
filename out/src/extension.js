@@ -44,7 +44,13 @@ function activate()
                 {
                     if( availableTasks.indexOf( taskName ) === -1 )
                     {
-                        vscode.window.showErrorMessage( '[Trigger Task on Save] Task not found: ' + taskName );
+                        vscode.window.showErrorMessage( "[Trigger Task on Save] Task not found: " + taskName );
+                        return false;
+                    }
+                    else if( taskName !== "build" && taskName !== "test" )
+                    {
+                        vscode.window.showErrorMessage( "[Trigger Task on Save] Only 'build' and 'test' tasks are currently supported" );
+                        return false;
                     }
                     else
                     {
