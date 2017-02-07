@@ -2,7 +2,8 @@
 // Import the module and reference it with the alias vscode in your code below
 var vscode = require( 'vscode' ),
     path = require( 'path' ),
-    fs = require( 'fs' );
+    fs = require( 'fs' ),
+    minimatch = require( 'minimatch' );
 
 function activate()
 {
@@ -37,11 +38,9 @@ function activate()
 
         function checkTask( taskName )
         {
-            tasks[ taskName ].map( function( extension )
+            tasks[ taskName ].map( function( glob )
             {
-                var pattern = "." + extension + "$";
-                var match = pattern.length > 0 && new RegExp( pattern ).test( document.fileName );
-                if( match )
+                if( minimatch( document.fileName, glob, { matchBase: true }) )
                 {
                     if( availableTasks.indexOf( taskName ) === -1 )
                     {
