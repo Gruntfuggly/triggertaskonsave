@@ -1,65 +1,55 @@
-# triggertaskonsave README
+# Trigger Task on Save
 
-This is the README for your extension "triggertaskonsave". After writing up a brief description, we recommend including the following sections.
+Normally you would use a watch task to make something happen when a file
+changes, but sometimes you just need a task to run once on save. This extension
+lets you do that. It's currently limited to triggering only the *build* or
+*test* tasks, as there doesn't seem to be a way to programmatically trigger any
+others at the moment (it's an upcoming feature apparently).
 
-## Features
+## Installing
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+You can install the latest version of the extension via the Visual Studio
+Marketplace
+[here](https://marketplace.visualstudio.com/items?itemName=Gruntfuggly.triggertaskonsave).
 
-For example if there is an image subfolder under your extension project workspace:
+Alternatively, open Visual Studio code, press `Ctrl+P` or `Cmd+P` and type:
 
-\!\[feature X\]\(images/feature-x.png\)
+    > ext install triggertaskonsave
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+### Source Code
 
-## Requirements
+The source code is available on GitHub [here](https://github.com/Gruntfuggly/triggertaskonsave).
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+## Configuration
 
-## Extension Settings
+The extension can be temporarily enabled/disabled with
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+```json
+    "triggerTaskOnSave.on": true
+```
 
-For example:
+Tasks can be associated with filename globs, e.g.
 
-This extension contributes the following settings:
+```json
+    "triggerTaskOnSave.tasks": {
+        "build": [
+            "**/*.h"
+            "**/*.cpp",
+        ],
+        "test": [
+            "**-ut/*.h"
+            "**-ut/*.cpp",
+        ],
+    }
+```
 
-* `myExtension.enable`: enable/disable this extension
-* `myExtension.thing`: set to `blah` to do something
+Note: By default, the build task will be run on every file save.
 
-## Known Issues
+## Version History
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+0.0.1 First version
 
-## Release Notes
+### Credits
 
-Users appreciate release notes as you update your extension.
-
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
------------------------------------------------------------------------------------------------------------
-
-## Working with Markdown
-
-**Note:** You can author your README using Visual Studio Code.  Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on OSX or `Ctrl+\` on Windows and Linux)
-* Toggle preview (`Shift+CMD+V` on OSX or `Shift+Ctrl+V` on Windows and Linux)
-* Press `Ctrl+Space` (Windows, Linux) or `Cmd+Space` (OSX) to see a list of Markdown snippets
-
-### For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+This is my first extension and is loosely based on
+[Format On Save](https://marketplace.visualstudio.com/items?itemName=gyuha.format-on-save).
