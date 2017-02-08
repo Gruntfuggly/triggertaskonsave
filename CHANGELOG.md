@@ -1,3 +1,7 @@
+# v0.1.0 - 2017-02-08
+- Fix version history
+- Remove message indicating running task
+
 # v0.0.3 - 2017-02-08
 - Fix dependencies
 
