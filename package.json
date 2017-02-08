@@ -1,7 +1,8 @@
 {
-    "name": "trigger-task-on-save",
+    "name": "triggertaskonsave",
     "displayName": "Trigger Task on Save",
-    "description": "Run a selected task when saving files",
+    "icon": "icon.png",
+    "description": "Run tasks when saving files",
     "version": "0.0.1",
     "publisher": "Gruntfuggly",
     "repository": "https: //github.com/Gruntfuggly/triggertaskonsave",
