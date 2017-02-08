@@ -54,7 +54,6 @@ function activate()
                     }
                     else
                     {
-                        vscode.window.showInformationMessage( "[Trigger Task on Save] Running task: " + taskName );
                         vscode.commands.executeCommand( 'workbench.action.tasks.' + taskName );
                     }
                 }
