@@ -43,7 +43,9 @@ function activate()
         {
             tasks[ taskName ].map( function( glob )
             {
-                if( minimatch( document.fileName, glob, { matchBase: true }) )
+                // get file relative in the project 
+                let filePath = vscode.workspace.asRelativePath(document.fileName);
+                if( minimatch( filePath, glob, { matchBase: true }) )
                 {
                     if( availableTasks.indexOf( taskName ) === -1 )
                     {
