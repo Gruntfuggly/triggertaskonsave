@@ -1,3 +1,6 @@
+// add the following line for intellisense
+/// <reference path="../../vscode.d.ts" />
+
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 var vscode = require( 'vscode' ),
