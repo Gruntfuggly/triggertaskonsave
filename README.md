@@ -37,22 +37,14 @@ Tasks can be associated with filename globs, e.g.
     }
 ```
 
+The following commands are provided, which can be access from the command pallete, or bound to keys:
+
+
+    triggerTaskOnSave.enable
+    triggerTaskOnSave.disable
+    triggerTaskOnSave.toggle
+
 Note: By default, the build task will be run on every file save.
-
-## Version History
-
-#### 0.1.0
-- Fix version history (!)
-- Remove running task message
-
-#### 0.0.3
-- Fix dependencies
-
-#### 0.0.2
-- Fix icon
-
-#### 0.0.1
-- First version
 
 ### Credits
 

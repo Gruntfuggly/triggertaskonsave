@@ -1,3 +1,7 @@
+# v0.1.2 - 2017-03-20
+- Use relative paths for matching (contributed by LiuYue)
+- Add commands for enable/disable/toggle which can be bound to keys (suggested by Bill Denton)
+
 # v0.1.1 - 2017-03-05
 - Fix link to repo
 
