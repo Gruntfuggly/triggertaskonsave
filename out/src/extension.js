@@ -1,3 +1,6 @@
+// add the following line for intellisense
+/// <reference path="../../vscode.d.ts" />
+
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 var vscode = require( 'vscode' ),
@@ -40,7 +43,9 @@ function activate()
         {
             tasks[ taskName ].map( function( glob )
             {
-                if( minimatch( document.fileName, glob, { matchBase: true }) )
+                // get file relative in the project 
+                let filePath = vscode.workspace.asRelativePath(document.fileName);
+                if( minimatch( filePath, glob, { matchBase: true }) )
                 {
                     if( availableTasks.indexOf( taskName ) === -1 )
                     {
