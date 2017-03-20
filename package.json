@@ -17,9 +17,23 @@
     ],
     "main": "./out/src/extension",
     "contributes": {
+        "commands": [
+            {
+                "command": "triggerTaskOnSave.enable",
+                "title": "Trigger Task On Save: Enable"
+            },
+            {
+                "command": "triggerTaskOnSave.disable",
+                "title": "Trigger Task On Save: Disable"
+            },
+            {
+                "command": "triggerTaskOnSave.toggle",
+                "title": "Trigger Task On Save: Toggle"
+            }
+        ],
         "configuration": {
             "type": "object",
-            "title": "Trigger Task on Save confiiguration",
+            "title": "Trigger Task on Save configuration",
             "properties": {
                 "triggerTaskOnSave.on": {
                     "type": "boolean",

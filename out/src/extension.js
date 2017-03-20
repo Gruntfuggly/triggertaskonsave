@@ -8,7 +8,29 @@ var vscode = require( 'vscode' ),
     fs = require( 'fs' ),
     minimatch = require( 'minimatch' );
 
-function activate()
+function enable()
+{
+    vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).update( 'on', true, true );
+    vscode.window.setStatusBarMessage( "Trigger Task On Save Enabled", 1000 );
+}
+function disable()
+{
+    vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).update( 'on', false, true );
+    vscode.window.setStatusBarMessage( "Trigger Task On Save Disabled", 1000 );
+}
+function toggle()
+{
+    if( vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).get( 'on' ) )
+    {
+        disable();
+    }
+    else
+    {
+        enable();
+    }
+}
+
+function activate( context )
 {
     'use strict';
     vscode.workspace.onDidSaveTextDocument( function( document )
@@ -35,7 +57,7 @@ function activate()
         taskFileTasks.tasks.map( function( task )
         {
             availableTasks.push( task.taskName );
-        });
+        } );
 
         var tasks = vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).tasks;
 
@@ -43,9 +65,9 @@ function activate()
         {
             tasks[ taskName ].map( function( glob )
             {
-                // get file relative in the project 
-                let filePath = vscode.workspace.asRelativePath(document.fileName);
-                if( minimatch( filePath, glob, { matchBase: true }) )
+                // get file relative in the project
+                let filePath = vscode.workspace.asRelativePath( document.fileName );
+                if( minimatch( filePath, glob, { matchBase: true } ) )
                 {
                     if( availableTasks.indexOf( taskName ) === -1 )
                     {
@@ -62,7 +84,7 @@ function activate()
                         vscode.commands.executeCommand( 'workbench.action.tasks.' + taskName );
                     }
                 }
-            });
+            } );
         }
 
         for( var taskName in tasks )
@@ -72,7 +94,12 @@ function activate()
                 checkTask( taskName );
             }
         }
-    });
+    } );
+
+    context.subscriptions.push(
+        vscode.commands.registerCommand( 'triggerTaskOnSave.enable', enable ),
+        vscode.commands.registerCommand( 'triggerTaskOnSave.disable', disable ),
+        vscode.commands.registerCommand( 'triggerTaskOnSave.toggle', toggle ) );
 }
 exports.activate = activate;
 // this method is called when your extension is deactivated
