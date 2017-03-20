@@ -5,3 +5,4 @@ test/**
 jsconfig.json
 .eslintrc.json
 icon.piko
+vscode.d.ts
