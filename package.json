@@ -3,9 +3,9 @@
     "displayName": "Trigger Task on Save",
     "icon": "icon.png",
     "description": "Run tasks when saving files",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "publisher": "Gruntfuggly",
-    "repository": "https: //github.com/Gruntfuggly/triggertaskonsave",
+    "repository": "https://github.com/Gruntfuggly/triggertaskonsave",
     "engines": {
         "vscode": "^1.5.0"
     },
