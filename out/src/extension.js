@@ -76,7 +76,10 @@ function activate( context )
                     }
                     else
                     {
-                        vscode.commands.executeCommand( 'workbench.action.tasks.' + taskName );
+                        if( vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).restart )
+                        {
+                            vscode.commands.executeCommand( 'workbench.action.terminal.kill' );
+                        }
                         vscode.commands.executeCommand( 'workbench.action.tasks.runTask', taskName );
                     }
                 }
