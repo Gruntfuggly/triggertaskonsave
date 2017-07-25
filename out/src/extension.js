@@ -78,9 +78,15 @@ function activate( context )
                     {
                         if( vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).restart )
                         {
-                            vscode.commands.executeCommand( 'workbench.action.terminal.kill' );
+                            vscode.commands.executeCommand( 'workbench.action.tasks.terminate' ).then( function()
+                            {
+                                vscode.commands.executeCommand( 'workbench.action.tasks.runTask', taskName );
+                            } );
                         }
-                        vscode.commands.executeCommand( 'workbench.action.tasks.runTask', taskName );
+                        else
+                        {
+                            vscode.commands.executeCommand( 'workbench.action.tasks.runTask', taskName );
+                        }
                     }
                 }
             } );
