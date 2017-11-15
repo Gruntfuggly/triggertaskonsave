@@ -56,7 +56,7 @@ function activate( context )
 
         taskFileTasks.tasks.map( function( task )
         {
-            availableTasks.push( task.taskName );
+            availableTasks.push( task.label );
         } );
 
         var tasks = vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).tasks;
