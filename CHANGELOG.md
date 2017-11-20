@@ -1,3 +1,6 @@
+# v0.1.4 - 2017-11-20
+- Add support for tasks.json format 2.0 (thanks to clintmod)
+
 # v0.1.2 - 2017-03-20
 - Use relative paths for matching (contributed by LiuYue)
 - Add commands for enable/disable/toggle which can be bound to keys (suggested by Bill Denton)
