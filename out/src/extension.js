@@ -42,13 +42,19 @@ function activate( context )
         }
 
         var taskFilePath = path.join( vscode.workspace.rootPath, '.vscode', 'tasks.json' );
-        var rawTaskFileContents = fs.readFileSync( taskFilePath, 'utf8' );
-        var taskFileContents = rawTaskFileContents.replace( /((\/\/|\/\/\/)(.*)(\r\n|\r|\n))|((\/\*)((\D|\d)+)(\*\/))/gi, "" );
-        var taskFileTasks = JSON.parse( taskFileContents );
+        var taskFileTasks = {};
+        try
+        {
+            var rawTaskFileContents = fs.readFileSync( taskFilePath, 'utf8' );
+            var taskFileContents = rawTaskFileContents.replace( /((\/\/|\/\/\/)(.*)(\r\n|\r|\n))|((\/\*)((\D|\d)+)(\*\/))/gi, "" );
+            taskFileTasks = JSON.parse( taskFileContents );
+        }
+        catch(e)
+        {
+        }
 
         if( taskFileTasks.tasks === undefined )
         {
-            vscode.window.showErrorMessage( "[Trigger Task on Save] No tasks defined" );
             return;
         }
 
