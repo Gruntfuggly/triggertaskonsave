@@ -1,3 +1,7 @@
+# v0.1.5 - 2018-03-14
+- Add (long overdue) support for multiple workspaces
+- Show error if tasks.json is not valid
+
 # v0.1.4 - 2017-11-20
 - Add support for tasks.json format 2.0 (thanks to clintmod)
 

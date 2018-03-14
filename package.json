@@ -3,7 +3,7 @@
 	"displayName": "Trigger Task on Save",
 	"icon": "icon.png",
 	"description": "Run tasks when saving files",
-	"version": "0.1.4",
+  "version": "0.1.5",
 	"publisher": "Gruntfuggly",
 	"repository": "https://github.com/Gruntfuggly/triggertaskonsave",
 	"engines": {
@@ -58,6 +58,7 @@
 		"test": "node ./node_modules/vscode/bin/test"
 	},
 	"dependencies": {
+        "json-lint": "^0.1.0",
 		"minimatch": "^3.0.3"
 	},
 	"devDependencies": {

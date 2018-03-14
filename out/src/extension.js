@@ -6,7 +6,8 @@
 var vscode = require( 'vscode' ),
     path = require( 'path' ),
     fs = require( 'fs' ),
-    minimatch = require( 'minimatch' );
+    minimatch = require( 'minimatch' ),
+    jsonlint = require( 'json-lint' );
 
 function enable()
 {
@@ -36,21 +37,42 @@ function activate( context )
     vscode.workspace.onDidSaveTextDocument( function( document )
     {
         var onFormat = vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).on;
-        if( onFormat !== true )
+        var editor = vscode.window.activeTextEditor;
+        if( onFormat !== true || ! editor )
         {
             return;
         }
 
-        var taskFilePath = path.join( vscode.workspace.rootPath, '.vscode', 'tasks.json' );
+        var workspace = vscode.workspace.getWorkspaceFolder( editor.document.uri );
+        if( !workspace )
+        {
+            return;
+        }
+
+        var rootPath = workspace.uri.fsPath;
+
+        var taskFilePath = path.join( rootPath, '.vscode', 'tasks.json' );
         var taskFileTasks = {};
+        var rawTaskFileContents;
         try
         {
-            var rawTaskFileContents = fs.readFileSync( taskFilePath, 'utf8' );
-            var taskFileContents = rawTaskFileContents.replace( /((\/\/|\/\/\/)(.*)(\r\n|\r|\n))|((\/\*)((\D|\d)+)(\*\/))/gi, "" );
+            rawTaskFileContents = fs.readFileSync( taskFilePath, 'utf8' );
+        }
+        catch( e )
+        {
+            return;
+        }
+
+        var taskFileContents = rawTaskFileContents.replace( /((\/\/|\/\/\/)(.*)(\r\n|\r|\n))|((\/\*)((\D|\d)+)(\*\/))/gi, "" );
+        try
+        {
             taskFileTasks = JSON.parse( taskFileContents );
         }
-        catch(e)
+        catch( e )
         {
+            var lint = jsonlint( rawTaskFileContents );
+            vscode.window.showErrorMessage("Failed to read tasks.json: " + e );
+            vscode.window.showErrorMessage("Failed to read tasks.json: " + lint.error + " at line " + lint.line + ", character " + lint.character);
         }
 
         if( taskFileTasks.tasks === undefined )
