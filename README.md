@@ -2,6 +2,8 @@
 
 Normally you would use a watch task to make something happen when a file changes, but sometimes you just need a task to run once on save. This extension lets you do that.
 
+*Apology: The previous release was an attempt to add support for multiple workspaces, but on further testing, it appears that this can't work as intended, as there is no way to trigger a task in a specific workspace.*
+
 ## Installing
 
 You can install the latest version of the extension via the Visual Studio Marketplace [here](https://marketplace.visualstudio.com/items?itemName=Gruntfuggly.triggertaskonsave).

@@ -1,3 +1,6 @@
+# v0.1.6 - 2018-03-19
+- Add note that multiple workspaces can't work
+
 # v0.1.5 - 2018-03-14
 - Add (long overdue) support for multiple workspaces
 - Show error if tasks.json is not valid
