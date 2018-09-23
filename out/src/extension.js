@@ -4,7 +4,7 @@
 var vscode = require( 'vscode' );
 var minimatch = require( 'minimatch' );
 
-var currentTask;
+var currentTaskExecution;
 var restartTask;
 
 function enable()
@@ -33,31 +33,25 @@ function activate( context )
 {
     'use strict';
 
-    context.subscriptions.push( vscode.tasks.onDidEndTask( function( endedTask )
+    context.subscriptions.push( vscode.tasks.onDidEndTask( function( endEvent )
     {
         if( vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).get( 'showNotifications' ) === true )
         {
-            vscode.window.showInformationMessage( "Task '" + endedTask.execution.task.name + "' finished" );
+            vscode.window.showInformationMessage( "Task '" + endEvent.execution.task.name + "' finished" );
         }
-        if( endedTask === currentTask )
-        {
-            currentTask = undefined;
-        }
+
         if( restartTask !== undefined )
         {
-            vscode.tasks.executeTask( restartTask ).then( function( runningTask )
-            {
-                restartTask = undefined;
-                currentTask = runningTask;
-            } );
+            vscode.tasks.executeTask( restartTask );
+            restartTask = undefined;
         }
     } ) );
 
-    context.subscriptions.push( vscode.tasks.onDidStartTask( function( startedTask )
+    context.subscriptions.push( vscode.tasks.onDidStartTask( function( startEvent )
     {
         if( vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).get( 'showNotifications' ) === true )
         {
-            vscode.window.showInformationMessage( "Task '" + startedTask.execution.task.name + "' started" );
+            vscode.window.showInformationMessage( "Task '" + startEvent.execution.task.name + "' started" );
         }
     } ) );
 
@@ -65,6 +59,7 @@ function activate( context )
     {
         if( vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).get( 'on' ) === true )
         {
+            var current = vscode.tasks.taskExecutions;
             vscode.tasks.fetchTasks().then( function( availableTasks )
             {
                 var tasks = vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).tasks;
@@ -81,20 +76,24 @@ function activate( context )
                             {
                                 if( task.name === taskName )
                                 {
+                                    var currentTaskExecution;
+                                    current.map( function( e )
+                                    {
+                                        if( e.task._id === task._id )
+                                        {
+                                            currentTaskExecution = e;
+                                        }
+                                    } );
                                     found = true;
 
-                                    if( currentTask && vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).get( 'restart' ) === true )
+                                    if( currentTaskExecution !== undefined && vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).get( 'restart' ) === true )
                                     {
-                                        currentTask.terminate();
+                                        currentTaskExecution.terminate();
                                         restartTask = task;
                                     }
                                     else
                                     {
-                                        vscode.tasks.executeTask( task ).then( function( runningTask )
-                                        {
-                                            restartTask = undefined;
-                                            currentTask = runningTask;
-                                        } );
+                                        vscode.tasks.executeTask( task );
                                     }
                                 }
                             } );
@@ -126,7 +125,7 @@ function activate( context )
 
 function deactivate()
 {
-    currentTask = undefined;
+    currentTaskExecution = undefined;
     restartTask = undefined;
 }
 

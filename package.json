@@ -1,81 +1,81 @@
 {
-	"name": "triggertaskonsave",
-	"displayName": "Trigger Task on Save",
-	"icon": "icon.png",
-	"description": "Run tasks when saving files",
-    "version": "0.2.0",
-	"publisher": "Gruntfuggly",
-	"repository": "https://github.com/Gruntfuggly/triggertaskonsave",
-	"engines": {
-		"vscode": "^1.5.0"
-	},
-	"categories": [
-		"Other"
-	],
-	"activationEvents": [
-		"*"
-	],
-	"main": "./out/src/extension",
-	"contributes": {
-		"commands": [
-			{
-				"command": "triggerTaskOnSave.enable",
-				"title": "Trigger Task On Save: Enable"
-			},
-			{
-				"command": "triggerTaskOnSave.disable",
-				"title": "Trigger Task On Save: Disable"
-			},
-			{
-				"command": "triggerTaskOnSave.toggle",
-				"title": "Trigger Task On Save: Toggle"
-			}
-		],
-		"configuration": {
-			"type": "object",
+    "name": "triggertaskonsave",
+    "displayName": "Trigger Task on Save",
+    "icon": "icon.png",
+    "description": "Run tasks when saving files",
+    "version": "0.2.1",
+    "publisher": "Gruntfuggly",
+    "repository": "https://github.com/Gruntfuggly/triggertaskonsave",
+    "engines": {
+        "vscode": "^1.5.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [
+        "*"
+    ],
+    "main": "./out/src/extension",
+    "contributes": {
+        "commands": [
+            {
+                "command": "triggerTaskOnSave.enable",
+                "title": "Trigger Task On Save: Enable"
+            },
+            {
+                "command": "triggerTaskOnSave.disable",
+                "title": "Trigger Task On Save: Disable"
+            },
+            {
+                "command": "triggerTaskOnSave.toggle",
+                "title": "Trigger Task On Save: Toggle"
+            }
+        ],
+        "configuration": {
+            "type": "object",
             "title": "Trigger Task on Save",
-			"properties": {
-				"triggerTaskOnSave.on": {
-					"type": "boolean",
-					"description": "Automatically trigger tasks on save",
-					"default": true
-				},
-				"triggerTaskOnSave.restart": {
-					"type": "boolean",
-					"description": "Kill the task first if it is already running",
+            "properties": {
+                "triggerTaskOnSave.on": {
+                    "type": "boolean",
+                    "description": "Automatically trigger tasks on save",
+                    "default": true
+                },
+                "triggerTaskOnSave.restart": {
+                    "type": "boolean",
+                    "description": "Kill the task first if it is already running",
                     "default": false
-				},
-				"triggerTaskOnSave.tasks": {
-					"type": "object",
-					"description": "Tasks to associate with file globs, e.g. \"build\": [\"**/*.h\",\"**/*.cpp\"]",
-					"default": {}
+                },
+                "triggerTaskOnSave.tasks": {
+                    "type": "object",
+                    "description": "Tasks to associate with file globs, e.g. \"build\": [\"**/*.h\",\"**/*.cpp\"]",
+                    "default": {}
                 },
                 "triggerTaskOnSave.showNotifications": {
                     "type": "boolean",
                     "description": "Show popup notifications when tasks start and end",
                     "default": false
-				}
-			}
-		}
-	},
-	"scripts": {
-		"postinstall": "node ./node_modules/vscode/bin/install",
-		"test": "node ./node_modules/vscode/bin/test"
-	},
-	"dependencies": {
-		"minimatch": "^3.0.3"
-	},
-	"devDependencies": {
-		"@types/mocha": "^2.2.32",
-		"@types/node": "^6.0.40",
-		"eslint": "^3.6.0",
-		"mocha": "^2.3.3",
-		"typescript": "^2.0.3",
-		"vscode": "^1.0.0"
-	},
-	"__metadata": {
-		"id": "d165ee3e-9bb1-4d30-b415-b6592cfffc3f",
-		"publisherDisplayName": "Gruntfuggly",
-		"publisherId": "d4906d2e-f2ee-492d-9c7c-02b6160599ec"
-	}
+                }
+            }
+        }
+    },
+    "scripts": {
+        "postinstall": "node ./node_modules/vscode/bin/install",
+        "test": "node ./node_modules/vscode/bin/test"
+    },
+    "dependencies": {
+        "minimatch": "^3.0.3"
+    },
+    "devDependencies": {
+        "@types/mocha": "^2.2.32",
+        "@types/node": "^6.0.40",
+        "eslint": "^3.6.0",
+        "mocha": "^2.3.3",
+        "typescript": "^2.0.3",
+        "vscode": "^1.0.0"
+    },
+    "__metadata": {
+        "id": "d165ee3e-9bb1-4d30-b415-b6592cfffc3f",
+        "publisherDisplayName": "Gruntfuggly",
+        "publisherId": "d4906d2e-f2ee-492d-9c7c-02b6160599ec"
+    }
 }

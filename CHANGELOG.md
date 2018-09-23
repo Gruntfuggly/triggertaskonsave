@@ -1,3 +1,6 @@
+# v0.2.1 - 2018-09-23
+- Simplify restart mechanism
+
 # v0.2.0 - 2018-09-23
 - Major rewrite to use the new task API
 - Change default setting for restarting tasks to off
