@@ -1,13 +1,11 @@
 // add the following line for intellisense
 /// <reference path="../../vscode.d.ts" />
 
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
-var vscode = require( 'vscode' ),
-    path = require( 'path' ),
-    fs = require( 'fs' ),
-    minimatch = require( 'minimatch' ),
-    jsonlint = require( 'json-lint' );
+var vscode = require( 'vscode' );
+var minimatch = require( 'minimatch' );
+
+var currentTask;
+var restartTask;
 
 function enable()
 {
@@ -34,117 +32,105 @@ function toggle()
 function activate( context )
 {
     'use strict';
-    vscode.workspace.onDidSaveTextDocument( function( document )
+
+    context.subscriptions.push( vscode.tasks.onDidEndTask( function( endedTask )
     {
-        var onFormat = vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).on;
-        var editor = vscode.window.activeTextEditor;
-        if( onFormat !== true || ! editor )
+        if( vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).get( 'showNotifications' ) === true )
         {
-            return;
+            vscode.window.showInformationMessage( "Task '" + endedTask.execution.task.name + "' finished" );
         }
-
-        var workspace = vscode.workspace.getWorkspaceFolder( editor.document.uri );
-        if( !workspace )
+        if( endedTask === currentTask )
         {
-            return;
+            currentTask = undefined;
         }
-
-        var rootPath = workspace.uri.fsPath;
-
-        var taskFilePath = path.join( rootPath, '.vscode', 'tasks.json' );
-        var taskFileTasks = {};
-        var rawTaskFileContents;
-        try
+        if( restartTask !== undefined )
         {
-            rawTaskFileContents = fs.readFileSync( taskFilePath, 'utf8' );
-        }
-        catch( e )
-        {
-            return;
-        }
-
-        var taskFileContents = rawTaskFileContents.replace( /((\/\/|\/\/\/)(.*)(\r\n|\r|\n))|((\/\*)((\D|\d)+)(\*\/))/gi, "" );
-        try
-        {
-            taskFileTasks = JSON.parse( taskFileContents );
-        }
-        catch( e )
-        {
-            var lint = jsonlint( rawTaskFileContents );
-            vscode.window.showErrorMessage("Failed to read tasks.json: " + e );
-            vscode.window.showErrorMessage("Failed to read tasks.json: " + lint.error + " at line " + lint.line + ", character " + lint.character);
-        }
-
-        if( taskFileTasks.tasks === undefined )
-        {
-            return;
-        }
-
-        var availableTasks = [];
-
-        taskFileTasks.tasks.map( function( task )
-        {
-            if( task.label )
+            vscode.tasks.executeTask( restartTask ).then( function( runningTask )
             {
-                availableTasks.push( task.label );
-            }
-            else if( task.taskName )
-            {
-                availableTasks.push( task.taskName );
-            }
-        } );
+                restartTask = undefined;
+                currentTask = runningTask;
+            } );
+        }
+    } ) );
 
-        var tasks = vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).tasks;
-
-        function checkTask( taskName )
+    context.subscriptions.push( vscode.tasks.onDidStartTask( function( startedTask )
+    {
+        if( vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).get( 'showNotifications' ) === true )
         {
-            tasks[ taskName ].map( function( glob )
+            vscode.window.showInformationMessage( "Task '" + startedTask.execution.task.name + "' started" );
+        }
+    } ) );
+
+    context.subscriptions.push( vscode.workspace.onDidSaveTextDocument( function( document )
+    {
+        if( vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).get( 'on' ) === true )
+        {
+            vscode.tasks.fetchTasks().then( function( availableTasks )
             {
-                // get file relative in the project
-                let filePath = vscode.workspace.asRelativePath( document.fileName );
-                if( minimatch( filePath, glob, { matchBase: true } ) )
+                var tasks = vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).tasks;
+
+                function checkTask( taskName )
                 {
-                    if( availableTasks.indexOf( taskName ) === -1 )
+                    tasks[ taskName ].map( function( glob )
                     {
-                        vscode.window.showErrorMessage( "[Trigger Task on Save] Task not found: " + taskName );
-                        return false;
-                    }
-                    else
-                    {
-                        if( vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).restart )
+                        var filePath = vscode.workspace.asRelativePath( document.fileName );
+                        if( minimatch( filePath, glob, { matchBase: true } ) )
                         {
-                            vscode.commands.executeCommand( 'workbench.action.tasks.terminate' ).then( function()
+                            var found = false;
+                            availableTasks.map( function( task )
                             {
-                                vscode.commands.executeCommand( 'workbench.action.tasks.runTask', taskName );
+                                if( task.name === taskName )
+                                {
+                                    found = true;
+
+                                    if( currentTask && vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).get( 'restart' ) === true )
+                                    {
+                                        currentTask.terminate();
+                                        restartTask = task;
+                                    }
+                                    else
+                                    {
+                                        vscode.tasks.executeTask( task ).then( function( runningTask )
+                                        {
+                                            restartTask = undefined;
+                                            currentTask = runningTask;
+                                        } );
+                                    }
+                                }
                             } );
+                            if( found === false )
+                            {
+                                vscode.window.showErrorMessage( "Task not found: " + taskName );
+                                return false;
+                            }
                         }
-                        else
-                        {
-                            vscode.commands.executeCommand( 'workbench.action.tasks.runTask', taskName );
-                        }
+                    } );
+                }
+
+                for( var taskName in tasks )
+                {
+                    if( tasks.hasOwnProperty( taskName ) )
+                    {
+                        checkTask( taskName );
                     }
                 }
             } );
         }
-
-        for( var taskName in tasks )
-        {
-            if( tasks.hasOwnProperty( taskName ) )
-            {
-                checkTask( taskName );
-            }
-        }
-    } );
+    } ) );
 
     context.subscriptions.push(
         vscode.commands.registerCommand( 'triggerTaskOnSave.enable', enable ),
         vscode.commands.registerCommand( 'triggerTaskOnSave.disable', disable ),
         vscode.commands.registerCommand( 'triggerTaskOnSave.toggle', toggle ) );
 }
-exports.activate = activate;
-// this method is called when your extension is deactivated
+
 function deactivate()
 {
+    currentTask = undefined;
+    restartTask = undefined;
 }
+
+exports.activate = activate;
 exports.deactivate = deactivate;
+
 //# sourceMappingURL=extension.js.map

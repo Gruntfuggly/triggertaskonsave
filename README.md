@@ -8,23 +8,13 @@ Normally you would use a watch task to make something happen when a file changes
 
 You can install the latest version of the extension via the Visual Studio Marketplace [here](https://marketplace.visualstudio.com/items?itemName=Gruntfuggly.triggertaskonsave).
 
-Alternatively, open Visual Studio code, press `Ctrl+P` or `Cmd+P` and type:
-
-    > ext install triggertaskonsave
-
 ### Source Code
 
 The source code is available on GitHub [here](https://github.com/Gruntfuggly/triggertaskonsave).
 
 ## Configuration
 
-The extension can be temporarily enabled/disabled with:
-
-```json
-    "triggerTaskOnSave.on": true
-```
-
-Tasks can be associated with filename globs, e.g.
+Tasks are associated with filename globs, e.g.
 
 ```json
     "triggerTaskOnSave.tasks": {
@@ -39,19 +29,33 @@ Tasks can be associated with filename globs, e.g.
     }
 ```
 
+The extension can be temporarily enabled/disabled with:
+
+```json
+    "triggerTaskOnSave.on": true
+```
+
 There is also an option restart the task if it is currently executing:
 
 ```json
     "triggerTaskOnSave.restart": true
 ````
 
-This seems to work some of the time, but sometimes it will stop the task without starting it and sometimes it will display a message telling you to stop the task using F1.
+Notifications of tasks starting and ending can be enabled with:
 
-The following commands are provided, which can be accessed from the command pallete, or bound to keys:
+```json
+    "triggerTaskOnSave.showNotifications": true
+````
+
+The following commands are provided, which can be accessed from the command palette (F1), or bound to keys:
 
     triggerTaskOnSave.enable
     triggerTaskOnSave.disable
     triggerTaskOnSave.toggle
+
+## Known Issues
+
+When restarting tasks, there may be a delay before the running task finishes and the task restarts. This is necessary to avoid an error that gets generated (see [issue 53331](https://github.com/Microsoft/vscode/issues/53331)). Hopefully when this issue is fixed, the delay will no longer be apparent.
 
 ### Credits
 

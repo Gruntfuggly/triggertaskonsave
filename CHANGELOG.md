@@ -1,3 +1,7 @@
+# v0.2.0 - 2018-09-23
+- Major rewrite to use the new task API
+- Change default setting for restarting tasks to off
+
 # v0.1.6 - 2018-03-19
 - Add note that multiple workspaces can't work
 
