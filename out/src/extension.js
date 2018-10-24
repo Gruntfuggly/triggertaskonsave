@@ -33,8 +33,19 @@ function activate( context )
 {
     'use strict';
 
+    var busyIndicator = vscode.window.createStatusBarItem( vscode.StatusBarAlignment.Right, 0 );
+
+    function showBusyIndicator( taskname )
+    {
+        busyIndicator.tooltip = "Running task " + taskname + "...";
+        busyIndicator.text = "$(sync~spin)";
+        busyIndicator.show();
+    }
+
     context.subscriptions.push( vscode.tasks.onDidEndTask( function( endEvent )
     {
+        busyIndicator.hide();
+
         if( vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).get( 'showNotifications' ) === true )
         {
             vscode.window.showInformationMessage( "Task '" + endEvent.execution.task.name + "' finished" );
@@ -49,6 +60,7 @@ function activate( context )
 
     context.subscriptions.push( vscode.tasks.onDidStartTask( function( startEvent )
     {
+        showBusyIndicator( startEvent.execution.task.name );
         if( vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).get( 'showNotifications' ) === true )
         {
             vscode.window.showInformationMessage( "Task '" + startEvent.execution.task.name + "' started" );
