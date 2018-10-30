@@ -1,3 +1,6 @@
+# v0.2.3 - 2018-10-30
+- Use full path when matching absolute globs
+
 # v0.2.2 - 2018-10-30
 - Fix restart mechanism
 - Allow env variables and ${workspaceFolder} substitution in globs

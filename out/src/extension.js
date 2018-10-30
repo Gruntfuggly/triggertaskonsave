@@ -2,6 +2,7 @@
 /// <reference path="../../vscode.d.ts" />
 
 var vscode = require( 'vscode' );
+var path = require( 'path' );
 var minimatch = require( 'minimatch' );
 
 var currentTaskExecution;
@@ -102,7 +103,7 @@ function activate( context )
                     {
                         glob = expandGlob( glob, document.uri );
 
-                        var filePath = vscode.workspace.asRelativePath( document.fileName );
+                        var filePath = path.isAbsolute( glob ) ? document.fileName : vscode.workspace.asRelativePath( document.fileName );
 
                         if( minimatch( filePath, glob, { matchBase: true } ) )
                         {
