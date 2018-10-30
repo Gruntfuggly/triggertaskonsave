@@ -54,6 +54,11 @@
                     "type": "boolean",
                     "description": "Show popup notifications when tasks start and end",
                     "default": false
+                },
+                "triggerTaskOnSave.showBusyIndicator": {
+                    "type": "boolean",
+                    "description": "Show a busy indicator with the current task name on the status bar",
+                    "default": true
                 }
             }
         }

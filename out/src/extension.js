@@ -77,7 +77,10 @@ function activate( context )
 
     context.subscriptions.push( vscode.tasks.onDidStartTask( function( startEvent )
     {
-        showBusyIndicator( startEvent.execution.task.name );
+        if( vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).get( 'showBusyIndicator' ) === true )
+        {
+            showBusyIndicator( startEvent.execution.task.name );
+        }
         if( vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).get( 'showNotifications' ) === true )
         {
             vscode.window.showInformationMessage( "Task '" + startEvent.execution.task.name + "' started" );
