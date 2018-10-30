@@ -29,21 +29,38 @@ function toggle()
     }
 }
 
+function expandGlob( glob, uri )
+{
+    var envRegex = new RegExp( "\\$\\{(.*?)\\}", "g" );
+    glob = glob.replace( envRegex, function( match, name )
+    {
+        if( name === "workspaceFolder" )
+        {
+            return vscode.workspace.getWorkspaceFolder( uri ).uri.path;
+        }
+        return process.env[ name ];
+    } );
+
+    return glob;
+}
+
 function activate( context )
 {
     'use strict';
 
     var busyIndicator = vscode.window.createStatusBarItem( vscode.StatusBarAlignment.Right, 0 );
 
-    function showBusyIndicator( taskname )
+    function showBusyIndicator( taskName )
     {
-        busyIndicator.tooltip = "Running task " + taskname + "...";
-        busyIndicator.text = "$(sync~spin)";
+        busyIndicator.tooltip = "Running task " + taskName + "...";
+        busyIndicator.text = "$(sync~spin) " + taskName;
         busyIndicator.show();
     }
 
     context.subscriptions.push( vscode.tasks.onDidEndTask( function( endEvent )
     {
+        currentTaskExecution = undefined;
+
         busyIndicator.hide();
 
         if( vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).get( 'showNotifications' ) === true )
@@ -80,7 +97,10 @@ function activate( context )
                 {
                     tasks[ taskName ].map( function( glob )
                     {
+                        glob = expandGlob( glob, document.uri );
+
                         var filePath = vscode.workspace.asRelativePath( document.fileName );
+
                         if( minimatch( filePath, glob, { matchBase: true } ) )
                         {
                             var found = false;
@@ -88,7 +108,6 @@ function activate( context )
                             {
                                 if( task.name === taskName )
                                 {
-                                    var currentTaskExecution;
                                     current.map( function( e )
                                     {
                                         if( e.task._id === task._id )

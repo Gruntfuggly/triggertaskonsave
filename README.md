@@ -29,6 +29,8 @@ Tasks are associated with filename globs, e.g.
     }
 ```
 
+Environment variables and the vscode variable `${workspaceFolder}` will be expanded in the glob patterns.
+
 The extension can be temporarily enabled/disabled with:
 
 ```json
