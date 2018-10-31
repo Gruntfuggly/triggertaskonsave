@@ -37,7 +37,8 @@ function expandGlob( glob, uri )
     {
         if( name === "workspaceFolder" )
         {
-            return vscode.workspace.getWorkspaceFolder( uri ).uri.path;
+            var folder = vscode.workspace.getWorkspaceFolder( uri );
+            return folder ? folder.uri.path : vscode.workspace.workspaceFolders[ 0 ].uri.fsPath;
         }
         return process.env[ name ];
     } );

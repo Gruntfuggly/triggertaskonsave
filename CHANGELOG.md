@@ -1,3 +1,6 @@
+# v0.2.4 - 2018-10-31
+- Fix uri check when expanding ${workspaceFolder}
+
 # v0.2.3 - 2018-10-30
 - Use full path when matching absolute globs
 
