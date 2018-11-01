@@ -5,129 +5,137 @@ var vscode = require( 'vscode' );
 var path = require( 'path' );
 var minimatch = require( 'minimatch' );
 
-var currentTaskExecution;
-var restartTask;
-
-var busyIndicator = vscode.window.createStatusBarItem( vscode.StatusBarAlignment.Right, 9500 );
-var selectedTaskIndicator = vscode.window.createStatusBarItem( vscode.StatusBarAlignment.Right, 9500 );
-
-function showBusyIndicator( taskName )
-{
-    if( vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).get( 'selectedTask' ) )
-    {
-        selectedTaskIndicator.tooltip = "Click to terminate...";
-        selectedTaskIndicator.text = "$(sync~spin) " + taskName;
-        selectedTaskIndicator.command = "triggerTaskOnSave.stopCurrentTask"
-    }
-    else
-    {
-        busyIndicator.tooltip = "Click to terminate...";
-        busyIndicator.text = "$(sync~spin) " + taskName;
-        busyIndicator.command = "triggerTaskOnSave.stopCurrentTask"
-        busyIndicator.show();
-    }
-}
-
-function showSelectedTask()
-{
-    var taskName = vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).get( 'selectedTask' );
-
-    if( taskName )
-    {
-        selectedTaskIndicator.tooltip = "Click to clear selected task...";
-        selectedTaskIndicator.text = "$(star)" + taskName;
-        selectedTaskIndicator.command = "triggerTaskOnSave.clearSelectedTask";
-        selectedTaskIndicator.show();
-    }
-    else
-    {
-        selectedTaskIndicator.hide();
-    }
-}
-
-function enable()
-{
-    vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).update( 'on', true, true );
-    vscode.window.setStatusBarMessage( "Trigger Task On Save Enabled", 1000 );
-}
-function disable()
-{
-    vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).update( 'on', false, true );
-    vscode.window.setStatusBarMessage( "Trigger Task On Save Disabled", 1000 );
-}
-function toggle()
-{
-    if( vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).get( 'on' ) )
-    {
-        disable();
-    }
-    else
-    {
-        enable();
-    }
-}
-
-function selectTask()
-{
-    vscode.tasks.fetchTasks().then( function( availableTasks )
-    {
-        var taskList = [];
-        availableTasks.map( function( task )
-        {
-            taskList.push( task.name );
-        } );
-
-        vscode.window.showQuickPick( taskList, { matchOnDetail: true, matchOnDescription: true, placeHolder: "Select task..." } ).then( function( taskName )
-        {
-            if( taskName )
-            {
-                vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).update( 'selectedTask', taskName, false ).then( function()
-                {
-                    vscode.window.showInformationMessage( "Selected task: " + taskName );
-                    showSelectedTask();
-                } );
-            }
-        } );
-    } );
-}
-
-function clearSelectedTask()
-{
-    vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).update( 'selectedTask', undefined, false ).then( function()
-    {
-        vscode.window.showInformationMessage( "Selected task cleared" );
-        showSelectedTask();
-    } );
-}
-
-function stopCurrentTask()
-{
-    if( currentTaskExecution !== undefined )
-    {
-        currentTaskExecution.terminate();
-        showSelectedTask();
-    }
-}
-
-function expandGlob( glob, uri )
-{
-    var envRegex = new RegExp( "\\$\\{(.*?)\\}", "g" );
-    glob = glob.replace( envRegex, function( match, name )
-    {
-        if( name === "workspaceFolder" )
-        {
-            var folder = vscode.workspace.getWorkspaceFolder( uri );
-            return folder ? folder.uri.path : vscode.workspace.workspaceFolders[ 0 ].uri.fsPath;
-        }
-        return process.env[ name ];
-    } );
-
-    return glob;
-}
-
 function activate( context )
 {
     'use strict';
+
+    var currentTaskExecution;
+    var restartTask;
+
+    var busyIndicator = vscode.window.createStatusBarItem( vscode.StatusBarAlignment.Right, 9500 );
+    var selectedTaskIndicator = vscode.window.createStatusBarItem( vscode.StatusBarAlignment.Right, 9500 );
+
+    var outputChannel = vscode.window.createOutputChannel( 'Trigger Task On Save' );
+
+    function log( text )
+    {
+        outputChannel.appendLine( new Date().toLocaleTimeString() + " " + text );
+    }
+
+    function showBusyIndicator( taskName )
+    {
+        if( vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).get( 'selectedTask' ) )
+        {
+            selectedTaskIndicator.tooltip = "Click to terminate...";
+            selectedTaskIndicator.text = "$(sync~spin) " + taskName;
+            selectedTaskIndicator.command = "triggerTaskOnSave.stopCurrentTask"
+        }
+        else
+        {
+            busyIndicator.tooltip = "Click to terminate...";
+            busyIndicator.text = "$(sync~spin) " + taskName;
+            busyIndicator.command = "triggerTaskOnSave.stopCurrentTask"
+            busyIndicator.show();
+        }
+    }
+
+    function showSelectedTask()
+    {
+        var taskName = vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).get( 'selectedTask' );
+
+        if( taskName )
+        {
+            selectedTaskIndicator.tooltip = "Click to clear selected task...";
+            selectedTaskIndicator.text = "$(star)" + taskName;
+            selectedTaskIndicator.command = "triggerTaskOnSave.clearSelectedTask";
+            selectedTaskIndicator.show();
+        }
+        else
+        {
+            selectedTaskIndicator.hide();
+        }
+    }
+
+    function enable()
+    {
+        vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).update( 'on', true, true );
+        vscode.window.setStatusBarMessage( "Trigger Task On Save Enabled", 1000 );
+    }
+    function disable()
+    {
+        vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).update( 'on', false, true );
+        vscode.window.setStatusBarMessage( "Trigger Task On Save Disabled", 1000 );
+    }
+    function toggle()
+    {
+        if( vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).get( 'on' ) )
+        {
+            disable();
+        }
+        else
+        {
+            enable();
+        }
+    }
+
+    function selectTask()
+    {
+        vscode.tasks.fetchTasks().then( function( availableTasks )
+        {
+            var taskList = [];
+            availableTasks.map( function( task )
+            {
+                taskList.push( task.name );
+            } );
+
+            vscode.window.showQuickPick( taskList, { matchOnDetail: true, matchOnDescription: true, placeHolder: "Select task..." } ).then( function( taskName )
+            {
+                if( taskName )
+                {
+                    vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).update( 'selectedTask', taskName, false ).then( function()
+                    {
+                        vscode.window.showInformationMessage( "Selected task: " + taskName );
+                        showSelectedTask();
+                    } );
+                }
+            } );
+        } );
+    }
+
+    function clearSelectedTask()
+    {
+        vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).update( 'selectedTask', undefined, false ).then( function()
+        {
+            vscode.window.showInformationMessage( "Selected task cleared" );
+            showSelectedTask();
+        } );
+    }
+
+    function stopCurrentTask()
+    {
+        if( currentTaskExecution !== undefined )
+        {
+            log( "stopCurrentTask: terminating " + currentTaskExecution.task.name );
+            currentTaskExecution.terminate();
+            showSelectedTask();
+        }
+    }
+
+    function expandGlob( glob, uri )
+    {
+        var envRegex = new RegExp( "\\$\\{(.*?)\\}", "g" );
+        glob = glob.replace( envRegex, function( match, name )
+        {
+            if( name === "workspaceFolder" )
+            {
+                var folder = vscode.workspace.getWorkspaceFolder( uri );
+                return folder ? folder.uri.path : vscode.workspace.workspaceFolders[ 0 ].uri.fsPath;
+            }
+            return process.env[ name ];
+        } );
+
+        return glob;
+    }
 
     function findAndRunTask( availableTasks, taskName )
     {
@@ -141,11 +149,13 @@ function activate( context )
 
                 if( currentTaskExecution !== undefined && vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).get( 'restart' ) === true )
                 {
+                    log( "findAndRunTask: terminating " + currentTaskExecution.task.name );
                     currentTaskExecution.terminate();
                     restartTask = task;
                 }
                 else
                 {
+                    log( "findAndRunTask: executing " + task.name );
                     vscode.tasks.executeTask( task );
                 }
             }
@@ -159,6 +169,8 @@ function activate( context )
 
     context.subscriptions.push( vscode.tasks.onDidEndTask( function( endEvent )
     {
+        log( "vscode.tasks.onDidEndTask " + endEvent.execution.task.name );
+
         currentTaskExecution = undefined;
 
         if( vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).get( 'selectedTask' ) )
@@ -177,6 +189,7 @@ function activate( context )
 
         if( restartTask !== undefined )
         {
+            log( "vscode.tasks.onDidEndTask: executing " + currentTaskExecution.task.name );
             vscode.tasks.executeTask( restartTask );
             restartTask = undefined;
         }
@@ -184,6 +197,8 @@ function activate( context )
 
     context.subscriptions.push( vscode.tasks.onDidStartTask( function( startEvent )
     {
+        log( "vscode.tasks.onDidStartTask " + startEvent.execution.task.name );
+
         currentTaskExecution = startEvent.execution;
 
         if( vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).get( 'showBusyIndicator' ) === true )
@@ -248,6 +263,9 @@ function activate( context )
         vscode.commands.registerCommand( 'triggerTaskOnSave.clearSelectedTask', clearSelectedTask ),
         vscode.commands.registerCommand( 'triggerTaskOnSave.stopCurrentTask', stopCurrentTask )
     );
+
+    context.subscriptions.push( busyIndicator );
+    context.subscriptions.push( selectedTaskIndicator );
 
     showSelectedTask();
 }

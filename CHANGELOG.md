@@ -1,3 +1,6 @@
+# v0.2.6 - 2018-11-01
+- Add output channel for logging
+
 # v0.2.5 - 2018-11-01
 - Allow overriding of the selected task
 - Allow stopping of the currently running task
