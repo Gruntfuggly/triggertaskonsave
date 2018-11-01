@@ -17,6 +17,8 @@ function activate( context )
 
     var outputChannel = vscode.window.createOutputChannel( 'Trigger Task On Save' );
 
+    var startedTasks = {};
+
     function log( text )
     {
         outputChannel.appendLine( new Date().toLocaleTimeString() + " " + text );
@@ -155,8 +157,16 @@ function activate( context )
                 }
                 else
                 {
-                    log( "findAndRunTask: executing " + task.name );
-                    vscode.tasks.executeTask( task );
+                    if( startedTasks[ taskName ] === undefined )
+                    {
+                        startedTasks[ taskName ] = true;
+
+                        log( "findAndRunTask: executing " + task.name );
+                        vscode.tasks.executeTask( task ).then( function( taskExecution )
+                        {
+                            currentTaskExecution = taskExecution;
+                        } );
+                    }
                 }
             }
         } );
@@ -172,6 +182,7 @@ function activate( context )
         log( "vscode.tasks.onDidEndTask " + endEvent.execution.task.name );
 
         currentTaskExecution = undefined;
+        delete startedTasks[ endEvent.execution.task.name ];
 
         if( vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).get( 'selectedTask' ) )
         {
@@ -189,7 +200,7 @@ function activate( context )
 
         if( restartTask !== undefined )
         {
-            log( "vscode.tasks.onDidEndTask: executing " + currentTaskExecution.task.name );
+            log( "vscode.tasks.onDidEndTask: executing " + restartTask.name );
             vscode.tasks.executeTask( restartTask );
             restartTask = undefined;
         }
@@ -215,6 +226,8 @@ function activate( context )
     {
         if( vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).get( 'on' ) === true )
         {
+            log( "vscode.workspace.onDidSaveTextDocument: " + document.fileName );
+
             vscode.tasks.fetchTasks().then( function( availableTasks )
             {
                 var tasks = vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).tasks;
@@ -233,6 +246,7 @@ function activate( context )
 
                             if( minimatch( filePath, glob, { matchBase: true } ) )
                             {
+                                log( "vscode.workspace.onDidSaveTextDocument: match:" + glob );
                                 var selectedTask = vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).get( 'selectedTask' );
                                 findAndRunTask( availableTasks, selectedTask ? selectedTask : taskName );
                                 if( selectedTask )

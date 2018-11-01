@@ -1,3 +1,6 @@
+# v0.2.7 - 2018-11-01
+- Handle multiple file saves
+
 # v0.2.6 - 2018-11-01
 - Add output channel for logging
 
