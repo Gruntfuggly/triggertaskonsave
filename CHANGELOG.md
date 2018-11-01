@@ -1,3 +1,7 @@
+# v0.2.5 - 2018-11-01
+- Allow overriding of the selected task
+- Allow stopping of the currently running task
+
 # v0.2.4 - 2018-10-31
 - Fix uri check when expanding ${workspaceFolder}
 

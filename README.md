@@ -2,7 +2,7 @@
 
 Normally you would use a watch task to make something happen when a file changes, but sometimes you just need a task to run once on save. This extension lets you do that.
 
-*Apology: The previous release was an attempt to add support for multiple workspaces, but on further testing, it appears that this can't work as intended, as there is no way to trigger a task in a specific workspace.*
+When the task is running a status bar item is shown with the task name. Clicking this will stop the task.
 
 ## Installing
 
@@ -31,6 +31,14 @@ Tasks are associated with filename globs, e.g.
 
 Environment variables and the vscode variable `${workspaceFolder}` will be expanded in the glob patterns.
 
+The target task can also be overridden. In this case, any of the globs that match will trigger the selected task instead. This allows a build task to be run when changing a file in a dependent folder, for example. The selected task can be set using the **Trigger Task On Save: Select Task** command or by setting:
+
+```json
+    "triggerTaskOnSave.selectedTask": <task name>
+```
+
+When a task has been selected, it is indicated on the status bar with a star. The selected task can be cleared by clicking the status bar item or using the command **Trigger Task On Save: Clear Selected Task**.
+
 The extension can be temporarily enabled/disabled with:
 
 ```json
@@ -54,6 +62,9 @@ The following commands are provided, which can be accessed from the command pale
     triggerTaskOnSave.enable
     triggerTaskOnSave.disable
     triggerTaskOnSave.toggle
+    triggerTaskOnSave.selectTask
+    triggerTaskOnSave.clearSelectedTask
+    triggerTaskOnSave.stopCurrentTask
 
 ## Known Issues
 

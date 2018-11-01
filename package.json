@@ -3,7 +3,7 @@
     "displayName": "Trigger Task on Save",
     "icon": "icon.png",
     "description": "Run tasks when saving files",
-    "version": "0.2.4",
+    "version": "0.2.5",
     "publisher": "Gruntfuggly",
     "repository": "https://github.com/Gruntfuggly/triggertaskonsave",
     "engines": {
@@ -29,6 +29,18 @@
             {
                 "command": "triggerTaskOnSave.toggle",
                 "title": "Trigger Task On Save: Toggle"
+            },
+            {
+                "command": "triggerTaskOnSave.selectTask",
+                "title": "Trigger Task On Save: Select Task"
+            },
+            {
+                "command": "triggerTaskOnSave.clearSelectedTask",
+                "title": "Trigger Task On Save: Clear Selected Task"
+            },
+            {
+                "command": "triggerTaskOnSave.stopCurrentTask",
+                "title": "Trigger Task On Save: Stop Current Task"
             }
         ],
         "configuration": {
@@ -49,6 +61,10 @@
                     "type": "object",
                     "description": "Tasks to associate with file globs, e.g. \"build\": [\"**/*.h\",\"**/*.cpp\"]",
                     "default": {}
+                },
+                "triggerTaskOnSave.selectedTask": {
+                    "type": "string",
+                    "description": "Name of the task to run when a file is saved. Uses the defined globs, but overrides the task"
                 },
                 "triggerTaskOnSave.showNotifications": {
                     "type": "boolean",

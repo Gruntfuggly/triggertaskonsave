@@ -8,6 +8,43 @@ var minimatch = require( 'minimatch' );
 var currentTaskExecution;
 var restartTask;
 
+var busyIndicator = vscode.window.createStatusBarItem( vscode.StatusBarAlignment.Right, 9500 );
+var selectedTaskIndicator = vscode.window.createStatusBarItem( vscode.StatusBarAlignment.Right, 9500 );
+
+function showBusyIndicator( taskName )
+{
+    if( vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).get( 'selectedTask' ) )
+    {
+        selectedTaskIndicator.tooltip = "Click to terminate...";
+        selectedTaskIndicator.text = "$(sync~spin) " + taskName;
+        selectedTaskIndicator.command = "triggerTaskOnSave.stopCurrentTask"
+    }
+    else
+    {
+        busyIndicator.tooltip = "Click to terminate...";
+        busyIndicator.text = "$(sync~spin) " + taskName;
+        busyIndicator.command = "triggerTaskOnSave.stopCurrentTask"
+        busyIndicator.show();
+    }
+}
+
+function showSelectedTask()
+{
+    var taskName = vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).get( 'selectedTask' );
+
+    if( taskName )
+    {
+        selectedTaskIndicator.tooltip = "Click to clear selected task...";
+        selectedTaskIndicator.text = "$(star)" + taskName;
+        selectedTaskIndicator.command = "triggerTaskOnSave.clearSelectedTask";
+        selectedTaskIndicator.show();
+    }
+    else
+    {
+        selectedTaskIndicator.hide();
+    }
+}
+
 function enable()
 {
     vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).update( 'on', true, true );
@@ -27,6 +64,48 @@ function toggle()
     else
     {
         enable();
+    }
+}
+
+function selectTask()
+{
+    vscode.tasks.fetchTasks().then( function( availableTasks )
+    {
+        var taskList = [];
+        availableTasks.map( function( task )
+        {
+            taskList.push( task.name );
+        } );
+
+        vscode.window.showQuickPick( taskList, { matchOnDetail: true, matchOnDescription: true, placeHolder: "Select task..." } ).then( function( taskName )
+        {
+            if( taskName )
+            {
+                vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).update( 'selectedTask', taskName, false ).then( function()
+                {
+                    vscode.window.showInformationMessage( "Selected task: " + taskName );
+                    showSelectedTask();
+                } );
+            }
+        } );
+    } );
+}
+
+function clearSelectedTask()
+{
+    vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).update( 'selectedTask', undefined, false ).then( function()
+    {
+        vscode.window.showInformationMessage( "Selected task cleared" );
+        showSelectedTask();
+    } );
+}
+
+function stopCurrentTask()
+{
+    if( currentTaskExecution !== undefined )
+    {
+        currentTaskExecution.terminate();
+        showSelectedTask();
     }
 }
 
@@ -50,20 +129,46 @@ function activate( context )
 {
     'use strict';
 
-    var busyIndicator = vscode.window.createStatusBarItem( vscode.StatusBarAlignment.Right, 0 );
-
-    function showBusyIndicator( taskName )
+    function findAndRunTask( availableTasks, taskName )
     {
-        busyIndicator.tooltip = "Running task " + taskName + "...";
-        busyIndicator.text = "$(sync~spin) " + taskName;
-        busyIndicator.show();
+        var found = false;
+
+        availableTasks.map( function( task )
+        {
+            if( task.name === taskName )
+            {
+                found = true;
+
+                if( currentTaskExecution !== undefined && vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).get( 'restart' ) === true )
+                {
+                    currentTaskExecution.terminate();
+                    restartTask = task;
+                }
+                else
+                {
+                    vscode.tasks.executeTask( task );
+                }
+            }
+        } );
+        if( found === false )
+        {
+            vscode.window.showErrorMessage( "Task not found: " + taskName );
+            return false;
+        }
     }
 
     context.subscriptions.push( vscode.tasks.onDidEndTask( function( endEvent )
     {
         currentTaskExecution = undefined;
 
-        busyIndicator.hide();
+        if( vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).get( 'selectedTask' ) )
+        {
+            showSelectedTask();
+        }
+        else
+        {
+            busyIndicator.hide();
+        }
 
         if( vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).get( 'showNotifications' ) === true )
         {
@@ -79,6 +184,8 @@ function activate( context )
 
     context.subscriptions.push( vscode.tasks.onDidStartTask( function( startEvent )
     {
+        currentTaskExecution = startEvent.execution;
+
         if( vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).get( 'showBusyIndicator' ) === true )
         {
             showBusyIndicator( startEvent.execution.task.name );
@@ -93,50 +200,30 @@ function activate( context )
     {
         if( vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).get( 'on' ) === true )
         {
-            var current = vscode.tasks.taskExecutions;
             vscode.tasks.fetchTasks().then( function( availableTasks )
             {
                 var tasks = vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).tasks;
 
                 function checkTask( taskName )
                 {
+                    var done = false;
+
                     tasks[ taskName ].map( function( glob )
                     {
-                        glob = expandGlob( glob, document.uri );
-
-                        var filePath = path.isAbsolute( glob ) ? document.fileName : vscode.workspace.asRelativePath( document.fileName );
-
-                        if( minimatch( filePath, glob, { matchBase: true } ) )
+                        if( done === false )
                         {
-                            var found = false;
-                            availableTasks.map( function( task )
-                            {
-                                if( task.name === taskName )
-                                {
-                                    current.map( function( e )
-                                    {
-                                        if( e.task._id === task._id )
-                                        {
-                                            currentTaskExecution = e;
-                                        }
-                                    } );
-                                    found = true;
+                            glob = expandGlob( glob, document.uri );
 
-                                    if( currentTaskExecution !== undefined && vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).get( 'restart' ) === true )
-                                    {
-                                        currentTaskExecution.terminate();
-                                        restartTask = task;
-                                    }
-                                    else
-                                    {
-                                        vscode.tasks.executeTask( task );
-                                    }
-                                }
-                            } );
-                            if( found === false )
+                            var filePath = path.isAbsolute( glob ) ? document.fileName : vscode.workspace.asRelativePath( document.fileName );
+
+                            if( minimatch( filePath, glob, { matchBase: true } ) )
                             {
-                                vscode.window.showErrorMessage( "Task not found: " + taskName );
-                                return false;
+                                var selectedTask = vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).get( 'selectedTask' );
+                                findAndRunTask( availableTasks, selectedTask ? selectedTask : taskName );
+                                if( selectedTask )
+                                {
+                                    done = true;
+                                }
                             }
                         }
                     } );
@@ -156,7 +243,13 @@ function activate( context )
     context.subscriptions.push(
         vscode.commands.registerCommand( 'triggerTaskOnSave.enable', enable ),
         vscode.commands.registerCommand( 'triggerTaskOnSave.disable', disable ),
-        vscode.commands.registerCommand( 'triggerTaskOnSave.toggle', toggle ) );
+        vscode.commands.registerCommand( 'triggerTaskOnSave.toggle', toggle ),
+        vscode.commands.registerCommand( 'triggerTaskOnSave.selectTask', selectTask ),
+        vscode.commands.registerCommand( 'triggerTaskOnSave.clearSelectedTask', clearSelectedTask ),
+        vscode.commands.registerCommand( 'triggerTaskOnSave.stopCurrentTask', stopCurrentTask )
+    );
+
+    showSelectedTask();
 }
 
 function deactivate()
