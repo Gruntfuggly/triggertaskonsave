@@ -1,3 +1,6 @@
+# v0.2.8 - 2019-03-27
+- Add note to README.md describing which 'tasks' are triggered.
+
 # v0.2.7 - 2018-11-01
 - Handle multiple file saves
 

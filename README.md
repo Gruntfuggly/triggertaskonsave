@@ -4,6 +4,8 @@ Normally you would use a watch task to make something happen when a file changes
 
 When the task is running a status bar item is shown with the task name. Clicking this will stop the task.
 
+*Note: This extension is for triggering vscode tasks, as defined in your `.vscode/tasks.json`*
+
 ## Installing
 
 You can install the latest version of the extension via the Visual Studio Marketplace [here](https://marketplace.visualstudio.com/items?itemName=Gruntfuggly.triggertaskonsave).
@@ -49,13 +51,13 @@ There is also an option restart the task if it is currently executing:
 
 ```json
     "triggerTaskOnSave.restart": true
-````
+```
 
 Notifications of tasks starting and ending can be enabled with:
 
 ```json
     "triggerTaskOnSave.showNotifications": true
-````
+```
 
 The following commands are provided, which can be accessed from the command palette (F1), or bound to keys:
 
