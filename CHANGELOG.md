@@ -1,3 +1,6 @@
+# v0.2.9 - 2019-06-21
+- Support multiple workspaces
+
 # v0.2.8 - 2019-03-27
 - Add note to README.md describing which 'tasks' are triggered.
 

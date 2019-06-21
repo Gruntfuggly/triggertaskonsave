@@ -226,10 +226,26 @@ function activate( context )
     {
         if( vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).get( 'on' ) === true )
         {
-            log( "vscode.workspace.onDidSaveTextDocument: " + document.fileName );
+            var workspaceFolder = vscode.workspace.getWorkspaceFolder( document.uri );
+            if( workspaceFolder )
+            {
+                log( "vscode.workspace.onDidSaveTextDocument: " + document.fileName + " in workspace: " + workspaceFolder.name );
+            }
+            else
+            {
+                log( "vscode.workspace.onDidSaveTextDocument: " + document.fileName );
+            }
 
             vscode.tasks.fetchTasks().then( function( availableTasks )
             {
+                if( workspaceFolder )
+                {
+                    availableTasks = availableTasks.filter( function( task )
+                    {
+                        return task.scope.name === workspaceFolder.name;
+                    } );
+                }
+
                 var tasks = vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).tasks;
 
                 function checkTask( taskName )
