@@ -1,3 +1,5 @@
+- Add support for showing a status bar item allowing the extension to be enabled/disabled.
+
 # v0.2.9 - 2019-06-21
 - Support multiple workspaces
 

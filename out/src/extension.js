@@ -14,6 +14,23 @@ function activate( context )
 
     var busyIndicator = vscode.window.createStatusBarItem( vscode.StatusBarAlignment.Right, 9500 );
     var selectedTaskIndicator = vscode.window.createStatusBarItem( vscode.StatusBarAlignment.Right, 9500 );
+    var enableButton = vscode.window.createStatusBarItem( vscode.StatusBarAlignment.Right, 9500 );
+
+    function setEnableButton()
+    {
+        var config = vscode.workspace.getConfiguration( 'triggerTaskOnSave' );
+        var enabled = config.get( 'on', false );
+        enableButton.text = "Trigger Task on Save: $(" + ( enabled ? "check" : "x" ) + ") ";
+        enableButton.command = "triggerTaskOnSave.toggleEnabled"
+        if( config.get( 'showStatusBarToggle', false ) )
+        {
+            enableButton.show();
+        }
+        else
+        {
+            enableButton.hide();
+        }
+    }
 
     var outputChannel = vscode.window.createOutputChannel( 'Trigger Task On Save' );
 
@@ -177,6 +194,16 @@ function activate( context )
         }
     }
 
+    context.subscriptions.push( vscode.commands.registerCommand( 'triggerTaskOnSave.toggleEnabled', function()
+    {
+        var config = vscode.workspace.getConfiguration( 'triggerTaskOnSave' );
+        var enabled = !config.get( 'on', false );
+        config.update( 'on', enabled, true ).then( function()
+        {
+            setEnableButton();
+        } );
+    } ) );
+
     context.subscriptions.push( vscode.tasks.onDidEndTask( function( endEvent )
     {
         log( "vscode.tasks.onDidEndTask " + endEvent.execution.task.name );
@@ -246,7 +273,15 @@ function activate( context )
                     } );
                 }
 
-                var tasks = vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).tasks;
+                if( availableTasks.length === 0 )
+                {
+                    log( "No tasks available." );
+                }
+
+                var config = vscode.workspace.getConfiguration( 'triggerTaskOnSave' );
+                var tasks = config.get( 'tasks' );
+
+                log( JSON.stringify( tasks ) );
 
                 function checkTask( taskName )
                 {
@@ -278,10 +313,20 @@ function activate( context )
                 {
                     if( tasks.hasOwnProperty( taskName ) )
                     {
+                        log( "task:" + taskName );
                         checkTask( taskName );
                     }
                 }
             } );
+        }
+    } ) );
+
+    context.subscriptions.push( vscode.workspace.onDidChangeConfiguration( function( e )
+    {
+        if( e.affectsConfiguration( "triggerTaskOnSave" ) )
+        {
+            showSelectedTask();
+            setEnableButton();
         }
     } ) );
 
@@ -298,6 +343,7 @@ function activate( context )
     context.subscriptions.push( selectedTaskIndicator );
 
     showSelectedTask();
+    setEnableButton();
 }
 
 function deactivate()

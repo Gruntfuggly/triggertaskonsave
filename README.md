@@ -59,6 +59,12 @@ Notifications of tasks starting and ending can be enabled with:
     "triggerTaskOnSave.showNotifications": true
 ```
 
+If required, a status bar item allowing the extension to be enabled/disabled can be shown by setting this to true:
+
+```json
+    "triggerTaskOnSave.showStatusBarToggle": true
+```
+
 The following commands are provided, which can be accessed from the command palette (F1), or bound to keys:
 
     triggerTaskOnSave.enable

@@ -20,27 +20,38 @@
         "commands": [
             {
                 "command": "triggerTaskOnSave.enable",
-                "title": "Trigger Task On Save: Enable"
+                "title": "Trigger Task On Save: Enable",
+                "category": "Trigger Task On Save"
             },
             {
                 "command": "triggerTaskOnSave.disable",
-                "title": "Trigger Task On Save: Disable"
+                "title": "Trigger Task On Save: Disable",
+                "category": "Trigger Task On Save"
             },
             {
                 "command": "triggerTaskOnSave.toggle",
-                "title": "Trigger Task On Save: Toggle"
+                "title": "Trigger Task On Save: Toggle",
+                "category": "Trigger Task On Save"
             },
             {
                 "command": "triggerTaskOnSave.selectTask",
-                "title": "Trigger Task On Save: Select Task"
+                "title": "Trigger Task On Save: Select Task",
+                "category": "Trigger Task On Save"
             },
             {
                 "command": "triggerTaskOnSave.clearSelectedTask",
-                "title": "Trigger Task On Save: Clear Selected Task"
+                "title": "Trigger Task On Save: Clear Selected Task",
+                "category": "Trigger Task On Save"
             },
             {
                 "command": "triggerTaskOnSave.stopCurrentTask",
-                "title": "Trigger Task On Save: Stop Current Task"
+                "title": "Trigger Task On Save: Stop Current Task",
+                "category": "Trigger Task On Save"
+            },
+            {
+                "command": "triggerTaskOnSave.toggleEnabled",
+                "title": "Toggle Enabled",
+                "category": "Trigger Task On Save"
             }
         ],
         "configuration": {
@@ -75,6 +86,11 @@
                     "type": "boolean",
                     "description": "Show a busy indicator with the current task name on the status bar",
                     "default": true
+                },
+                "triggerTaskOnSave.showStatusBarToggle": {
+                    "type": "boolean",
+                    "description": "Show a status bar item allowing the extension to be enabled or disabled",
+                    "default": false
                 }
             }
         }
