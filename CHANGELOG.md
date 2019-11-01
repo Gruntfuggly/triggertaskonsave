@@ -1,3 +1,4 @@
+# v0.2.11 - 2019-11-01
 - Allow exclude globs to be used
 
 # v0.2.10 - 2019-10-28
