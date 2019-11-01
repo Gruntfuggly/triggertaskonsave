@@ -256,11 +256,11 @@ function activate( context )
             var workspaceFolder = vscode.workspace.getWorkspaceFolder( document.uri );
             if( workspaceFolder )
             {
-                log( "vscode.workspace.onDidSaveTextDocument: " + document.fileName + " in workspace: " + workspaceFolder.name );
+                log( "Document " + document.fileName + " saved in workspace " + workspaceFolder.name );
             }
             else
             {
-                log( "vscode.workspace.onDidSaveTextDocument: " + document.fileName );
+                log( "Document " + document.fileName + " saved" );
             }
 
             vscode.tasks.fetchTasks().then( function( availableTasks )
@@ -287,23 +287,33 @@ function activate( context )
                 {
                     var done = false;
 
+                    log( "Checking task: " + taskName );
+
                     tasks[ taskName ].map( function( glob )
                     {
                         if( done === false )
                         {
-                            glob = expandGlob( glob, document.uri );
-
+                            glob = expandGlob( glob, document.uri ).trim();
+                            var isExclude = glob && glob.charAt( 0 ) === '!';
                             var filePath = path.isAbsolute( glob ) ? document.fileName : vscode.workspace.asRelativePath( document.fileName );
-
+                            log( "Checking '" + filePath + "' against glob: " + glob );
                             if( minimatch( filePath, glob, { matchBase: true } ) )
                             {
-                                log( "vscode.workspace.onDidSaveTextDocument: match:" + glob );
-                                var selectedTask = vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).get( 'selectedTask' );
-                                findAndRunTask( availableTasks, selectedTask ? selectedTask : taskName );
-                                if( selectedTask )
+                                if( !isExclude )
                                 {
-                                    done = true;
+                                    log( "Matched by:" + glob );
+                                    var selectedTask = vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).get( 'selectedTask' );
+                                    findAndRunTask( availableTasks, selectedTask ? selectedTask : taskName );
+                                    if( selectedTask )
+                                    {
+                                        done = true;
+                                    }
                                 }
+                            }
+                            else if( isExclude )
+                            {
+                                log( "Excluded by:" + glob );
+                                done = true;
                             }
                         }
                     } );

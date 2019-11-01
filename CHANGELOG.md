@@ -1,3 +1,5 @@
+- Allow exclude globs to be used
+
 # v0.2.10 - 2019-10-28
 - Add support for showing a status bar item allowing the extension to be enabled/disabled.
 

@@ -21,6 +21,7 @@ Tasks are associated with filename globs, e.g.
 ```json
     "triggerTaskOnSave.tasks": {
         "build": [
+            "!ModuleVersion.h",
             "**/*.h"
             "**/*.cpp",
         ],
@@ -30,6 +31,8 @@ Tasks are associated with filename globs, e.g.
         ],
     }
 ```
+
+*Note: The array of globs for each task is processed in order and stops as soon as there is a match. Exclude globs (starting with* `!`*) should be specified first.*
 
 Environment variables and the vscode variable `${workspaceFolder}` will be expanded in the glob patterns.
 
