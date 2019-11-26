@@ -166,24 +166,38 @@ function activate( context )
             {
                 found = true;
 
-                if( currentTaskExecution !== undefined && vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).get( 'restart' ) === true )
+                function runTask()
                 {
-                    log( "findAndRunTask: terminating " + currentTaskExecution.task.name );
-                    currentTaskExecution.terminate();
-                    restartTask = task;
+                    if( currentTaskExecution !== undefined && vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).get( 'restart' ) === true )
+                    {
+                        log( "findAndRunTask: terminating " + currentTaskExecution.task.name );
+                        currentTaskExecution.terminate();
+                        restartTask = task;
+                    }
+                    else
+                    {
+                        if( startedTasks[ taskName ] === undefined )
+                        {
+                            startedTasks[ taskName ] = true;
+
+                            log( "findAndRunTask: executing " + task.name );
+                            vscode.tasks.executeTask( task ).then( function( taskExecution )
+                            {
+                                currentTaskExecution = taskExecution;
+                            } );
+                        }
+                    }
+                }
+
+                var delay = vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).get( 'delay' );
+                if( delay > 0 )
+                {
+                    log( "Waiting for " + delay + " milliseconds..." );
+                    setTimeout( runTask, delay );
                 }
                 else
                 {
-                    if( startedTasks[ taskName ] === undefined )
-                    {
-                        startedTasks[ taskName ] = true;
-
-                        log( "findAndRunTask: executing " + task.name );
-                        vscode.tasks.executeTask( task ).then( function( taskExecution )
-                        {
-                            currentTaskExecution = taskExecution;
-                        } );
-                    }
+                    runTask();
                 }
             }
         } );

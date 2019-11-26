@@ -63,6 +63,11 @@
                     "description": "Automatically trigger tasks on save",
                     "default": true
                 },
+                "triggerTaskOnSave.delay": {
+                    "type": "integer",
+                    "description": "If non-zero, wait for this number of milliseconds before triggering the task",
+                    "default": 0
+                },
                 "triggerTaskOnSave.restart": {
                     "type": "boolean",
                     "description": "Kill the task first if it is already running",

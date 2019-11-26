@@ -50,6 +50,12 @@ The extension can be temporarily enabled/disabled with:
     "triggerTaskOnSave.on": true
 ```
 
+A delay can be specified (in milliseconds) before triggering the task if you are experiencing problems with formatter timeouts, for example.
+
+```json
+    "triggerTaskOnSave.delay": <delay>
+```
+
 There is also an option restart the task if it is currently executing:
 
 ```json
