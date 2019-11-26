@@ -1,3 +1,4 @@
+# v0.2.12 - 2019-11-26
 - Add support for a delay before triggering tasks
 
 # v0.2.11 - 2019-11-01
