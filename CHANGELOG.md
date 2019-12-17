@@ -1,3 +1,6 @@
+# v0.2.13 - 2019-12-17
+- Clarify task configuration in README.md
+
 # v0.2.12 - 2019-11-26
 - Add support for a delay before triggering tasks
 
