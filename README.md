@@ -16,14 +16,14 @@ The source code is available on GitHub [here](https://github.com/Gruntfuggly/tri
 
 ## Configuration
 
-Tasks are associated with filename globs, e.g.
+Task names are associated with filename globs, e.g.
 
 ```json
     "triggerTaskOnSave.tasks": {
         "build": [
-            "!ModuleVersion.h",
-            "**/*.h"
-            "**/*.cpp",
+            "src/!ModuleVersion.h",
+            "src/*.h"
+            "src/*.cpp",
         ],
         "test": [
             "**-ut/*.h"
@@ -31,6 +31,8 @@ Tasks are associated with filename globs, e.g.
         ],
     }
 ```
+
+In the example above, the task **build** will be triggered when any *.h* or *.cpp* files, except for *ModuleVersion.h*, are saved in the *src* subfolder. The task **test** will be triggered when any *.h* or *.cpp* files are saved in any subfolders ending with *-ut*.
 
 *Note: The array of globs for each task is processed in order and stops as soon as there is a match. Exclude globs (starting with* `!`*) should be specified first.*
 
