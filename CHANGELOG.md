@@ -1,6 +1,7 @@
 # Trigger Task on Save Change Log
 
 - Fix markdown linter errors in CHANGELOG.md and README.md
+- Add license
 
 ## v0.2.13 - 2019-12-17
 
