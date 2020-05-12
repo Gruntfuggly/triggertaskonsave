@@ -78,12 +78,14 @@ If required, a status bar item allowing the extension to be enabled/disabled can
 
 The following commands are provided, which can be accessed from the command palette (F1), or bound to keys:
 
-    triggerTaskOnSave.enable
-    triggerTaskOnSave.disable
-    triggerTaskOnSave.toggle
-    triggerTaskOnSave.selectTask
-    triggerTaskOnSave.clearSelectedTask
-    triggerTaskOnSave.stopCurrentTask
+```json
+   triggerTaskOnSave.enable
+   triggerTaskOnSave.disable
+   triggerTaskOnSave.toggle
+   triggerTaskOnSave.selectTask
+   triggerTaskOnSave.clearSelectedTask
+   triggerTaskOnSave.stopCurrentTask
+```
 
 ## Known Issues
 
