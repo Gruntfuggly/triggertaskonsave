@@ -1,5 +1,7 @@
 # Trigger Task on Save Change Log
 
+## v0.2.14
+
 - Fix markdown linter errors in CHANGELOG.md and README.md
 - Add license
 - Reset delay on re-trigger
