@@ -11,6 +11,7 @@ function activate( context )
 
     var currentTaskExecution;
     var restartTask;
+    var runTimeout;
 
     var busyIndicator = vscode.window.createStatusBarItem( vscode.StatusBarAlignment.Right, 9500 );
     var selectedTaskIndicator = vscode.window.createStatusBarItem( vscode.StatusBarAlignment.Right, 9500 );
@@ -193,7 +194,8 @@ function activate( context )
                 if( delay > 0 )
                 {
                     log( "Waiting for " + delay + " milliseconds..." );
-                    setTimeout( runTask, delay );
+                    clearTimeout( runTimeout );
+                    runTimeout = setTimeout( runTask, delay );
                 }
                 else
                 {

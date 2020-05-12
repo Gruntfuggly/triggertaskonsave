@@ -52,7 +52,7 @@ The extension can be temporarily enabled/disabled with:
     "triggerTaskOnSave.on": true
 ```
 
-A delay can be specified (in milliseconds) before triggering the task if you are experiencing problems with formatter timeouts, for example.
+A delay can be specified (in milliseconds) before triggering the task if you are experiencing problems with formatter timeouts, for example. If the task is re-triggered during the delay, the delay is reset.
 
 ```json
     "triggerTaskOnSave.delay": <delay>

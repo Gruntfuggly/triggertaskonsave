@@ -2,6 +2,7 @@
 
 - Fix markdown linter errors in CHANGELOG.md and README.md
 - Add license
+- Reset delay on re-trigger
 
 ## v0.2.13 - 2019-12-17
 
