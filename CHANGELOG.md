@@ -1,5 +1,7 @@
 # Trigger Task on Save Change Log
 
+- Use github license file
+
 ## v0.2.15
 
 - Allow global tasks to be triggered
