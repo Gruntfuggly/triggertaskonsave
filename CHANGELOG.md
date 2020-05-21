@@ -1,5 +1,7 @@
 # Trigger Task on Save Change Log
 
+- Allow global tasks to be triggered
+
 ## v0.2.14
 
 - Fix markdown linter errors in CHANGELOG.md and README.md

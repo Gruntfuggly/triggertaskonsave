@@ -285,7 +285,7 @@ function activate( context )
                 {
                     availableTasks = availableTasks.filter( function( task )
                     {
-                        return task.scope.name === workspaceFolder.name;
+                        return task.scope.name === undefined || task.scope.name === workspaceFolder.name;
                     } );
                 }
 
