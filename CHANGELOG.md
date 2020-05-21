@@ -1,5 +1,7 @@
 # Trigger Task on Save Change Log
 
+## v0.2.15
+
 - Allow global tasks to be triggered
 
 ## v0.2.14
