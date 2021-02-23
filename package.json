@@ -97,6 +97,25 @@
                     "type": "boolean",
                     "description": "Show a status bar item allowing the extension to be enabled or disabled",
                     "default": false
+                },
+                "triggerTaskOnSave.resultIndicator": {
+                    "type": "string",
+                    "markdownDescription": "An `workbench.colorCustomizations` setting Used in conjunction with *triggerTaskOnSave.failureColour* to indicate when a task returns a non-zero exit code, e.g.`statusBar.background`"
+                },
+                "triggerTaskOnSave.resultIndicatorResetTimeout": {
+                    "type": "integer",
+                    "markdownDescription": "Number of seconds after which the results indicator is cleared",
+                    "default": 10
+                },
+                "triggerTaskOnSave.failureColour": {
+                    "type": "string",
+                    "markdownDescription": "A colour used in combination with *triggerTaskOnSave.resultIndicator* to indicate when a task returns a non-zero exit code. Overwrites the `workbench.colorCustomizations` in workspace settings. When a task completes successfully, the settings is removed.",
+                    "default": "#ff000040"
+                },
+                "triggerTaskOnSave.successColour": {
+                    "type": "string",
+                    "markdownDescription": "A colour used in combination with *triggerTaskOnSave.resultIndicator* to indicate when a task completes successfully (with an exit code of 0). Overwrites the `workbench.colorCustomizations` in workspace settings. When a task completes successfully, the settings is removed.",
+                    "default": "#00ff0040"
                 }
             }
         }

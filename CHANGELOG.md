@@ -1,5 +1,7 @@
 # Trigger Task on Save Change Log
 
+- Add task result indicator
+
 ## v0.2.16
 
 - Use github license file

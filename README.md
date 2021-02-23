@@ -76,6 +76,28 @@ If required, a status bar item allowing the extension to be enabled/disabled can
     "triggerTaskOnSave.showStatusBarToggle": true
 ```
 
+The extension can also be configured to highlight an area of the main window when a task is successful (returns an exit code of 0) or fails (returns a non-zero exit code). This works by overriding a value in your workspace settings. The override is cleared when the task is restarted. The colours are only overridden if defined, so you use either or both. _Note: If you have already set a value in your workspace settings, it will be lost._
+
+This is configured using this example:
+
+```json
+    "triggerTaskOnSave.resultIndicator": "statusBar.background",
+    "triggerTaskOnSave.failureColour": "#ff0000"
+    "triggerTaskOnSave.successColour": "#00ff00"
+```
+
+The value of *resultIndicator* can be any of the workbench colour customizations (see <https://code.visualstudio.com/api/references/theme-color>).
+
+The result indication is also cleared automatically after an interval. This can be changed by setting
+
+```json
+    "triggerTaskOnSave.resultIndicatorResetTimeout",
+```
+
+to the number of seconds required, or disabled by setting to 0.
+
+## Commands
+
 The following commands are provided, which can be accessed from the command palette (F1), or bound to keys:
 
 ```json

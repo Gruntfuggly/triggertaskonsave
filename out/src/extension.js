@@ -12,6 +12,7 @@ function activate( context )
     var currentTaskExecution;
     var restartTask;
     var runTimeout;
+    var resultIndicatorTimeout;
 
     var busyIndicator = vscode.window.createStatusBarItem( vscode.StatusBarAlignment.Right, 9500 );
     var selectedTaskIndicator = vscode.window.createStatusBarItem( vscode.StatusBarAlignment.Right, 9500 );
@@ -40,6 +41,49 @@ function activate( context )
     function log( text )
     {
         outputChannel.appendLine( new Date().toLocaleTimeString() + " " + text );
+    }
+
+    function resetResultIndicator()
+    {
+        log( "Reset result indicator" );
+        var resultIndicator = vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).get( 'resultIndicator' );
+        var colours = vscode.workspace.getConfiguration( 'workbench' ).inspect( 'colorCustomizations' ).workspaceValue;
+        if( colours !== undefined )
+        {
+            colours[ resultIndicator ] = undefined;
+            vscode.workspace.getConfiguration( 'workbench' ).update( 'colorCustomizations', colours, vscode.ConfigurationTarget.Workspace );
+        }
+    }
+
+    function showResultIndicator( failed )
+    {
+        log( "Show result indicator" );
+        var resultIndicator = vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).get( 'resultIndicator' );
+        var failureColour = vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).get( 'failureColour' );
+        var successColour = vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).get( 'successColour' );
+        var timeoutInSeconds = vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).get( 'resultIndicatorResetTimeout' );
+        var colours = vscode.workspace.getConfiguration( 'workbench' ).inspect( 'colorCustomizations' ).workspaceValue;
+        if( colours === undefined )
+        {
+            colours = {};
+        }
+        if( failed && failureColour )
+        {
+            colours[ resultIndicator ] = failureColour;
+        }
+        if( !failed && successColour )
+        {
+            colours[ resultIndicator ] = successColour;
+        }
+        if( failureColour || successColour )
+        {
+            clearTimeout( resultIndicatorTimeout );
+            if( timeoutInSeconds > 0 )
+            {
+                resultIndicatorTimeout = setTimeout( resetResultIndicator, timeoutInSeconds * 1000 );
+            }
+            vscode.workspace.getConfiguration( 'workbench' ).update( 'colorCustomizations', colours, vscode.ConfigurationTarget.Workspace );
+        }
     }
 
     function showBusyIndicator( taskName )
@@ -249,11 +293,29 @@ function activate( context )
         }
     } ) );
 
+    context.subscriptions.push( vscode.tasks.onDidEndTaskProcess( function( endEvent )
+    {
+        log( "vscode.tasks.onDidEndTaskProcess " + endEvent.execution.task.name + ", exitCode:" + endEvent.exitCode );
+
+        if( endEvent.execution.task.name === currentTaskExecution.task.name /* && endEvent.execution.task.definition === currentTaskExecution.task.definition */ )
+        {
+            // vscode.workspace.getConfiguration( 'workbench' ).update( 'colorCustomizations', colours, vscode.ConfigurationTarget.Workspace );
+
+            var resultIndicator = vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).get( 'resultIndicator' );
+            if( resultIndicator )
+            {
+                showResultIndicator( endEvent.exitCode !== 0 );
+            }
+        }
+    } ) );
+
     context.subscriptions.push( vscode.tasks.onDidStartTask( function( startEvent )
     {
         log( "vscode.tasks.onDidStartTask " + startEvent.execution.task.name );
 
         currentTaskExecution = startEvent.execution;
+
+        resetResultIndicator();
 
         if( vscode.workspace.getConfiguration( 'triggerTaskOnSave' ).get( 'showBusyIndicator' ) === true )
         {
@@ -368,6 +430,7 @@ function activate( context )
     context.subscriptions.push( busyIndicator );
     context.subscriptions.push( selectedTaskIndicator );
 
+    resetResultIndicator();
     showSelectedTask();
     setEnableButton();
 }
@@ -380,5 +443,3 @@ function deactivate()
 
 exports.activate = activate;
 exports.deactivate = deactivate;
-
-//# sourceMappingURL=extension.js.map
