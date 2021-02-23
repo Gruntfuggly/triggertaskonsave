@@ -1,5 +1,7 @@
 # Trigger Task on Save Change Log
 
+## v0.2.17
+
 - Add task result indicator
 
 ## v0.2.16

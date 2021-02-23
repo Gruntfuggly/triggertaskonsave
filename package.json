@@ -3,7 +3,7 @@
     "displayName": "Trigger Task on Save",
     "icon": "icon.png",
     "description": "Run tasks when saving files",
-    "version": "0.2.16",
+    "version": "0.2.17",
     "license": "MIT",
     "publisher": "Gruntfuggly",
     "repository": "https://github.com/Gruntfuggly/triggertaskonsave",
@@ -120,20 +120,8 @@
             }
         }
     },
-    "scripts": {
-        "postinstall": "node ./node_modules/vscode/bin/install",
-        "test": "node ./node_modules/vscode/bin/test"
-    },
     "dependencies": {
         "minimatch": "^3.0.3"
-    },
-    "devDependencies": {
-        "@types/mocha": "^2.2.32",
-        "@types/node": "^6.0.40",
-        "eslint": "^6.6.0",
-        "mocha": "^2.3.3",
-        "typescript": "^2.0.3",
-        "vscode": "^1.0.0"
     },
     "__metadata": {
         "id": "d165ee3e-9bb1-4d30-b415-b6592cfffc3f",
