@@ -22,12 +22,12 @@ Task names are associated with filename globs, e.g.
     "triggerTaskOnSave.tasks": {
         "build": [
             "src/!ModuleVersion.h",
-            "src/*.h"
-            "src/*.cpp",
+            "src/*.h",
+            "src/*.cpp"
         ],
         "test": [
-            "**-ut/*.h"
-            "**-ut/*.cpp",
+            "**-ut/*.h",
+            "**-ut/*.cpp"
         ],
     }
 ```
