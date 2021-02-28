@@ -3,7 +3,7 @@
     "displayName": "Trigger Task on Save",
     "icon": "icon.png",
     "description": "Run tasks when saving files",
-    "version": "0.2.17",
+    "version": "0.2.18",
     "license": "MIT",
     "publisher": "Gruntfuggly",
     "repository": "https://github.com/Gruntfuggly/triggertaskonsave",

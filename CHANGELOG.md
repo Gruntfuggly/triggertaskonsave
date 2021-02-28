@@ -1,18 +1,22 @@
 # Trigger Task on Save Change Log
 
-## v0.2.17
+## v0.2.18 - 2021-02-28
+
+- Fix commas in example settings in README.md (thanks to [Toliak](https://github.com/Toliak))
+
+## v0.2.17 - 2021-02-23
 
 - Add task result indicator
 
-## v0.2.16
+## v0.2.16 - 2020-05-21
 
 - Use github license file
 
-## v0.2.15
+## v0.2.15 - 2020-05-21
 
 - Allow global tasks to be triggered
 
-## v0.2.14
+## v0.2.14 - 2020-05-12
 
 - Fix markdown linter errors in CHANGELOG.md and README.md
 - Add license
