@@ -32,6 +32,11 @@ Task names are associated with filename globs, e.g.
     }
 ```
 
+Although VS Code tasks themselves are defined in *./.vscode/tasks.json*, you should
+add the above to *settings.json*, since these are extension settings.
+[This page](https://code.visualstudio.com/docs/getstarted/settings) explains
+the places where extension settings are stored.
+
 In the example above, the task **build** will be triggered when any *.h* or *.cpp* files, except for *ModuleVersion.h*, are saved in the *src* subfolder. The task **test** will be triggered when any *.h* or *.cpp* files are saved in any subfolders ending with *-ut*.
 
 *Note: The array of globs for each task is processed in order and stops as soon as there is a match. Exclude globs (starting with* `!`*) should be specified first.*
